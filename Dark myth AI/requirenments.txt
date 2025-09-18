@@ -9,3 +9,5 @@ tiktoken
 openai
 langchain-huggingface
 langchain-groq
+langchain-chroma
+
