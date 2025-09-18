@@ -1,15 +1,18 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
+
+
+api_key = st.secrets["GROQ_API_KEY"]
 # Load env variables
-dotenv_path = "C:\\Users\\Ayush\\.env.txt"
-load_dotenv(dotenv_path=dotenv_path, override=True)
+# dotenv_path = "C:\\Users\\Ayush\\.env.txt"
+# load_dotenv(dotenv_path=dotenv_path, override=True)
 
 # Paths
 DB_DIR = Path(r"A:\Dark Myth Explorer\Database")
@@ -187,4 +190,5 @@ def get_retrieval_stats(query, k=5):
         else:
             return {"error": "Database not initialized"}
     except Exception as e:
+
         return {"error": str(e)}
