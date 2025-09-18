@@ -6,10 +6,20 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
+import chromadb
 
 
+# Get credentials from Streamlit secrets
+api_key = st.secrets["CHROMA_CLOUD_API_KEY"]
+tenant_id = st.secrets["CHROMA_CLOUD_TENANT_ID"]
 
-api_key = st.secrets["GROQ_API_KEY"]
+# Initialize the ChromaDB client
+client = chromadb.CloudClient(
+    api_key=api_key,
+    tenant=tenant_id,
+    database='Dark myth ai' # Name of your database
+)
+# api_key = st.secrets["GROQ_API_KEY"]
 # Load env variables
 # dotenv_path = "C:\\Users\\Ayush\\.env.txt"
 # load_dotenv(dotenv_path=dotenv_path, override=True)
@@ -192,3 +202,4 @@ def get_retrieval_stats(query, k=5):
     except Exception as e:
 
         return {"error": str(e)}
+
