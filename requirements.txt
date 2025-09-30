@@ -12,3 +12,4 @@ langchain-groq
 langchain-chroma
 chromadb # This will install a version that's compatible
 numpy<2.0.0 # Add this line to pin NumPy to a compatible versio
+sentence-transformers
