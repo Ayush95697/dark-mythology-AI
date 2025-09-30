@@ -10,6 +10,6 @@ openai
 langchain-huggingface
 langchain-groq
 langchain-chroma
-chromadb # This will install a version that's compatible
-numpy<2.0.0 # Add this line to pin NumPy to a compatible versio
+chromadb  # No inline comments allowed in requirements.txt
+numpy<2.0.0  # Pin NumPy to avoid breaking changes
 sentence-transformers
