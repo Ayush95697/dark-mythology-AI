@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Optional
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -7,6 +8,12 @@ from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 import chromadb
+
+# Optional torch import for device detection
+try:
+    import torch  # type: ignore
+except Exception:
+    torch = None  # type: ignore
 
 
 
@@ -26,19 +33,38 @@ db = None
 
 def create_llm():
     """Initialize LLM, embeddings, and vector DB only once."""
-    global llm, embeddings, db
+    global llm, embeddings, db, DB_DIR
 
     if llm is None:
-        llm = ChatGroq(model_name="llama-3.3-70b-versatile")
+        groq_api_key: Optional[str] = os.getenv("GROQ_API_KEY")
+        if not groq_api_key:
+            raise RuntimeError("GROQ_API_KEY is not set. Add it to your .env file.")
+        llm = ChatGroq(model_name="llama-3.3-70b-versatile", api_key=groq_api_key)
 
     if embeddings is None:
+        device = "cpu"
+        try:
+            if torch is not None and hasattr(torch, "cuda") and torch.cuda.is_available():
+                device = "cuda"
+        except Exception:
+            device = "cpu"
+
         embeddings = HuggingFaceEmbeddings(
             model_name="BAAI/bge-large-en-v1.5",
-            model_kwargs={"device": "cuda"},  # or "cpu" if no GPU
+            model_kwargs={"device": device},
             encode_kwargs={"normalize_embeddings": True}
         )
 
     if db is None:
+        # Ensure database directory exists
+        try:
+            DB_DIR.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            # If directory cannot be created, fall back to current working directory
+            fallback_dir = Path.cwd() / "chroma_db"
+            fallback_dir.mkdir(parents=True, exist_ok=True)
+            DB_DIR = fallback_dir
+
         db = Chroma(
             persist_directory=str(DB_DIR),
             embedding_function=embeddings
@@ -193,5 +219,4 @@ def get_retrieval_stats(query, k=5):
     except Exception as e:
 
         return {"error": str(e)}
-
 
