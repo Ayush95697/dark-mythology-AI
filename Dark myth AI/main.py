@@ -1,9 +1,6 @@
 import streamlit as st
 from backend import create_llm, get_answer, get_database_info, update_llm_settings
 
-# Initialize backend
-create_llm()
-
 # Page setup
 st.set_page_config(
     page_title="Dark Mythology Explorer",
@@ -11,6 +8,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Initialize backend after Streamlit page configuration
+create_llm()
 
 # Custom CSS for dark demonic theme
 st.markdown("""
